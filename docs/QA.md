@@ -28,3 +28,12 @@ Initial review date: 2026-10-20.
 - Chromium mobile emulation checks hub layout/touch navigation, not hardware-specific input latency or audio.
 - Game compatibility labels come from inspected game documentation.
 - HTTP availability does not certify a complete gameplay session.
+
+## 2026-10-21 — Web-HQ navigation
+
+- Changed the header destination to `https://hyangdan2.github.io/`, labeled Web-HQ, using same-tab navigation.
+- Confirmed the live Web-HQ HTML already contains a GameHub card linking to `https://hyangdan2.github.io/GameHub/`.
+- Node 24.19.0 with `npm ci`; `npm run verify` passed (7 unit tests, 12 Chromium browser tests, validation and production build).
+- `npm run check:links` passed for all three published games (HTTP 200).
+- Browser layout coverage includes 360, 390, 768, and 1440 pixel widths; physical devices were not tested.
+- Production publication and hosted acceptance run through the Pages workflow for this release.

@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-21 — Web-HQ navigation
+
+- Replaced the header GitHub repository link with a same-tab Web-HQ link to `https://hyangdan2.github.io/`.
+- Confirmed Web-HQ already links to GameHub, completing the navigation path between the two hubs.
+
 ## 2026-10-20 — Initial hub
 
 - Added a responsive arcade gallery for Particle Beat, VALKYRIE, and ChibiLink.
