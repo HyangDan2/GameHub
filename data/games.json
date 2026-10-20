@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "games": [
+    {
+      "id": "particle-beat",
+      "repositoryUrl": "https://github.com/HyangDan2/CDXPilot0004",
+      "playUrl": "https://hyangdan2.github.io/CDXPilot0004/",
+      "title": "Particle Beat",
+      "subtitle": "Find your frequency.",
+      "description": "빛나는 노트를 따라 나만의 리듬을 찾아보세요. 오리지널 음악과 함께하는 우주빛 리듬 아케이드.",
+      "genre": "Rhythm",
+      "thumbnail": "assets/games/particle-beat.webp",
+      "thumbnailAlt": "LUMI and NOVA in official Particle Beat promotional artwork",
+      "inputs": [
+        "keyboard",
+        "touch"
+      ],
+      "mobileOrientation": "any",
+      "mobileSupport": "documented",
+      "status": "published",
+      "sortOrder": 40,
+      "sourceRevision": "5015af79504d035478d3fea33d096b47e1d8d270",
+      "evidencePath": "docs/onboarding/particle-beat.md",
+      "accent": "#b8a0ff",
+      "imageKind": "artwork"
+    },
+    {
+      "id": "valkyrie",
+      "repositoryUrl": "https://github.com/HyangDan2/CDXPilot0005",
+      "playUrl": "https://hyangdan2.github.io/CDXPilot0005/",
+      "title": "VALKYRIE",
+      "subtitle": "The Ashen Gate",
+      "description": "검과 활을 들고 잿빛 성문 너머로. 발키리 에이라와 함께 적을 돌파하는 액션 어드벤처.",
+      "genre": "Action",
+      "thumbnail": "assets/games/valkyrie.webp",
+      "thumbnailAlt": "Eira fighting with a sword in a ruined corridor",
+      "inputs": [
+        "keyboard",
+        "touch"
+      ],
+      "mobileOrientation": "landscape",
+      "mobileSupport": "documented",
+      "status": "published",
+      "sortOrder": 50,
+      "sourceRevision": "ad19f346f867962c19cf13ed01795b857dfa2ac5",
+      "evidencePath": "docs/onboarding/valkyrie.md",
+      "accent": "#e5c28a",
+      "imageKind": "screenshot"
+    },
+    {
+      "id": "chibilink",
+      "repositoryUrl": "https://github.com/HyangDan2/CDXPilot0006",
+      "playUrl": "https://hyangdan2.github.io/CDXPilot0006/",
+      "title": "ChibiLink",
+      "subtitle": "Momo’s Little Café",
+      "description": "같은 디저트를 연결하고, 쌓인 퍼즐을 하나씩 풀어보세요. 모모의 작은 카페에서 즐기는 달콤한 휴식.",
+      "genre": "Puzzle",
+      "thumbnail": "assets/games/chibilink.webp",
+      "thumbnailAlt": "Layered dessert tiles and Momo in ChibiLink",
+      "inputs": [
+        "mouse",
+        "touch",
+        "keyboard"
+      ],
+      "mobileOrientation": "any",
+      "mobileSupport": "documented",
+      "status": "published",
+      "sortOrder": 60,
+      "sourceRevision": "054535757be6147e470fd79ca95290839fd4a1eb",
+      "evidencePath": "docs/onboarding/chibilink.md",
+      "accent": "#f6aebc",
+      "imageKind": "screenshot"
+    }
+  ]
+}

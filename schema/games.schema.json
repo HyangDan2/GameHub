@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "games"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "games": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "repositoryUrl", "playUrl", "title", "description", "genre", "thumbnail", "thumbnailAlt", "inputs", "mobileOrientation", "mobileSupport", "status", "sortOrder", "sourceRevision", "evidencePath"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+          "repositoryUrl": {"type": "string", "pattern": "^https://[Gg][Ii][Tt][Hh][Uu][Bb]\\.[Cc][Oo][Mm]/[^/]+/[^/]+/?$"},
+          "playUrl": {"type": "string", "pattern": "^https://"},
+          "title": {"type": "string", "minLength": 1, "maxLength": 90},
+          "subtitle": {"type": "string", "maxLength": 100},
+          "description": {"type": "string", "minLength": 1, "maxLength": 220},
+          "genre": {"type": "string", "minLength": 1, "maxLength": 30},
+          "thumbnail": {"type": "string", "pattern": "^assets/games/[a-z0-9-]+\\.(webp|png|jpg|svg)$"},
+          "thumbnailAlt": {"type": "string", "minLength": 1, "maxLength": 180},
+          "inputs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["keyboard", "mouse", "touch", "gamepad"]}},
+          "mobileOrientation": {"enum": ["any", "portrait", "landscape", "unknown"]},
+          "mobileSupport": {"enum": ["unknown", "documented", "emulated", "device-verified"]},
+          "status": {"enum": ["draft", "published", "unavailable"]},
+          "sortOrder": {"type": "integer", "minimum": 0},
+          "sourceRevision": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+          "evidencePath": {"type": "string", "pattern": "^docs/onboarding/[a-z0-9-]+\\.md$"},
+          "accent": {"type": "string", "pattern": "^#[a-fA-F0-9]{6}$"},
+          "imageKind": {"enum": ["artwork", "screenshot"]}
+        }
+      }
+    }
+  }
+}
