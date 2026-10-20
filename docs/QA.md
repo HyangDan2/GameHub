@@ -14,7 +14,12 @@ Initial review date: 2026-10-20.
 - Browser coverage: 360, 390, 768, and 1440 pixel widths; same-tab destinations, keyboard focus/Enter, emulated touch, reduced motion, long text, missing image fallback, catalog retry, unavailable/draft handling, and safe text rendering.
 - Visual review: full-page desktop (1440 px) and mobile (390 px) screenshots inspected. See [desktop](evidence/desktop.png) and [mobile](evidence/mobile.png).
 - Pages configured with the GitHub Actions publishing source.
-- First deployment and live hub acceptance: pending the initial workflow run.
+- First production release: `c5de6f104bb3eb561137ede037af2209496ea083`.
+- [Release workflow](https://github.com/HyangDan2/GameHub/actions/runs/39371219990): verification and Pages deployment succeeded.
+- `npm run verify:hosted`: passed against `https://hyangdan2.github.io/GameHub/`; three cards, local images, destinations, and desktop/mobile bounds verified.
+- Live browser navigation: clicked each published play link from the public hub; all three reached their expected URL and actual game title.
+- Destination smoke checks: activated each game's start button; confirmed the Particle Beat rhythm highway after audio decoding, the VALKYRIE game scene, and the ChibiLink tile board. These are startup checks, not complete gameplay sessions or audio listening tests.
+- This evidence-only follow-up does not alter the deployed public files.
 
 ## Known boundaries
 
