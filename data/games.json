@@ -7,7 +7,7 @@
       "playUrl": "https://hyangdan2.github.io/AGPilot0001/",
       "title": "VALKYRIE EIRA",
       "subtitle": "Skybreak",
-      "description": "창공을 가르는 발키리 에이라의 비행 액션 슈팅. 성검 오스블레이드의 좌우 검격과 아크 블레이드로 마물 군단을 격파하세요.",
+      "description": "창공을 가르는 발키리 에이라의 비행 액션 슈팅. 성검 오스블레이드의 좌우 검격, 스침(Graze), 이지스 소드 호위체와 궁극기 궁니르의 심판으로 마물 군단을 격파하세요.",
       "genre": "Shooter",
       "thumbnail": "assets/games/valkyrie-eira.webp",
       "thumbnailAlt": "Valkyrie Eira soaring and slashing with Oathblade in high skies",
@@ -19,7 +19,7 @@
       "mobileSupport": "documented",
       "status": "published",
       "sortOrder": 35,
-      "sourceRevision": "f1f2fc06f3bb8d31a14b48c39657daa6d153a773",
+      "sourceRevision": "8e84d82e2526c35408b867176fc6539055d3a590",
       "evidencePath": "docs/onboarding/valkyrie-eira.md",
       "accent": "#44d7f5",
       "imageKind": "artwork"
