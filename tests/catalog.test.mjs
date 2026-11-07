@@ -24,6 +24,9 @@ test('missing thumbnail fails validation', async () => {
   assert.ok((await validateCatalog(data)).some(e => e.includes('Missing thumbnail')));
 });
 test('drafts are hidden and display order is stable', () => {
-  const data = structuredClone(source); data.games[0].status = 'draft'; data.games[2].sortOrder = 0;
-  assert.deepEqual(visibleGames(data).map(g => g.id), [data.games[2].id, data.games[1].id]);
+  const data = structuredClone(source);
+  data.games[0].status = 'draft';
+  data.games[2].sortOrder = 0;
+  const expected = data.games.slice(1).sort((a, b) => a.sortOrder - b.sortOrder).map(g => g.id);
+  assert.deepEqual(visibleGames(data).map(g => g.id), expected);
 });
