@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-07 — Four-game deployment repair
+
+- Updated browser checks to derive visible card counts from catalog status and select game destinations by stable ID, restoring validation after VALKYRIE EIRA joined the catalog.
+
 ## 2026-10-21 — Web-HQ navigation
 
 - Replaced the header GitHub repository link with a same-tab Web-HQ link to `https://hyangdan2.github.io/`.

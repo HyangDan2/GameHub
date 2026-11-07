@@ -1,5 +1,13 @@
 # Quality assurance
 
+## 2026-11-07 — Four-game deployment repair
+
+- Node 24.19.0 with `npm ci`: `npm run verify` passed catalog validation, 7 unit tests, production build, and 12 Chromium browser tests.
+- `npm run check:links`: all four published game destinations returned HTTP 200 at their expected HTTPS URLs.
+- Browser checks cover 360, 390, 768, and 1440 pixel widths, keyboard and emulated touch navigation, catalog retry, image fallback, draft/unavailable behavior, safe text rendering, long text, and reduced motion.
+- The browser tests now derive visible card counts from catalog status and identify navigation targets by stable game ID. The prior two Actions runs failed in verification before Pages deployment.
+- Physical-device testing was not performed. Game-side return integration is tracked separately.
+
 ## Scope
 
 This file records hub validation. Game mechanics and physical-device playability are not certified by hub tests.
