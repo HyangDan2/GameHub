@@ -11,7 +11,7 @@ for (const width of [360, 390, 768, 1440]) {
     await ready(page);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     for (const img of await page.locator('.card-image img').all()) await expect(img).toHaveJSProperty('naturalWidth', 960);
-    for (const game of catalog.games) await expect(page.getByRole('link', { name: `${game.title} 플레이하기` })).toHaveAttribute('href', game.playUrl);
+    for (const game of catalog.games) await expect(page.getByRole('link', { name: `Play ${game.title}`, exact: true })).toHaveAttribute('href', game.playUrl);
     expect(errors).toEqual([]);
   });
 }
@@ -19,15 +19,15 @@ test('each game opens its exact URL in the same tab', async ({ page, context }) 
   for (const game of catalog.games) {
     await page.route(game.playUrl, route => route.fulfill({ body: '<h1>Game destination</h1>', contentType: 'text/html' }));
     await ready(page);
-    await page.getByRole('link', { name: `${game.title} 플레이하기` }).click();
+    await page.getByRole('link', { name: `Play ${game.title}`, exact: true }).click();
     await expect(page).toHaveURL(game.playUrl); expect(context.pages()).toHaveLength(1);
   }
 });
 test('keyboard navigation has visible focus and activates a game', async ({ page }) => {
   await ready(page);
-  await page.keyboard.press('Tab'); await expect(page.getByText('게임 목록으로 이동')).toBeFocused();
+  await page.keyboard.press('Tab'); await expect(page.getByText('Skip to games')).toBeFocused();
   const game = gameById('particle-beat');
-  const target = page.getByRole('link', { name: `${game.title} 플레이하기` });
+  const target = page.getByRole('link', { name: `Play ${game.title}`, exact: true });
   for (let i = 0; i < 12 && !(await target.evaluate(el => el === document.activeElement)); i++) await page.keyboard.press('Tab');
   await expect(target).toBeFocused();
   expect(await target.evaluate(el => getComputedStyle(el).outlineStyle)).toBe('solid');
@@ -38,7 +38,7 @@ test('catalog failure offers a working retry', async ({ page }) => {
   let fail = true;
   await page.route('**/data/games.json', route => fail ? route.fulfill({ status: 503, body: '' }) : route.fulfill({ json: catalog }));
   await page.goto('./'); await expect(page.getByRole('alert')).toBeVisible();
-  fail = false; await page.getByRole('button', { name: '다시 불러오기' }).click(); await expect(page.locator('.game-card')).toHaveCount(visibleCount(catalog));
+  fail = false; await page.getByRole('button', { name: 'Try again' }).click(); await expect(page.locator('.game-card')).toHaveCount(visibleCount(catalog));
 });
 test('broken image falls back to a local placeholder', async ({ page }) => {
   await page.route('**/particle-beat.webp', route => route.abort());
@@ -72,7 +72,7 @@ test('touch can launch a game', async ({ browser }) => {
   const game = gameById('valkyrie');
   await page.route(game.playUrl, route => route.fulfill({ body: 'Game' }));
   await page.goto('http://127.0.0.1:4173/GameHub/');
-  await page.getByRole('link', { name: `${game.title} 플레이하기` }).tap();
+  await page.getByRole('link', { name: `Play ${game.title}`, exact: true }).tap();
   await expect(page).toHaveURL(game.playUrl); await context.close();
 });
 test('HD2Lab brand and cross-hub navigation are linked', async ({ page }) => {

@@ -2,8 +2,8 @@ import { visibleGames, safePlayUrl } from './catalog.js';
 
 const grid = document.querySelector('#game-grid');
 const count = document.querySelector('#game-count');
-const inputLabels = { keyboard: '키보드', mouse: '마우스', touch: '터치', gamepad: '게임패드' };
-const orientationLabels = { any: '세로 · 가로', landscape: '모바일 가로 화면', portrait: '모바일 세로 화면', unknown: '화면 방향 미확인' };
+const inputLabels = { keyboard: 'Keyboard', mouse: 'Mouse', touch: 'Touch', gamepad: 'Gamepad' };
+const orientationLabels = { any: 'Portrait & Landscape', landscape: 'Mobile Landscape', portrait: 'Mobile Portrait', unknown: 'Orientation Unverified' };
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -24,25 +24,25 @@ function card(game, index) {
   img.loading = 'lazy'; img.decoding = 'async';
   img.addEventListener('error', () => {
     img.src = './assets/games/placeholder.svg';
-    img.alt = `${game.title} — 이미지 준비 중`;
+    img.alt = `${game.title} — image coming soon`;
   }, { once: true });
-  picture.append(img, element('span', 'image-caption', game.imageKind === 'artwork' ? '공식 프로모션 아트' : '실제 플레이 화면'));
+  picture.append(img, element('span', 'image-caption', game.imageKind === 'artwork' ? 'Official Art' : 'Gameplay Screen'));
   const body = element('div', 'card-body');
   const kicker = element('div', 'card-kicker');
   kicker.append(element('span', '', game.genre.toUpperCase()), element('span', 'card-index', String(index + 1).padStart(2, '0')));
   const meta = element('div', 'card-meta');
   meta.append(element('span', 'meta-pill', game.inputs.map(input => inputLabels[input]).join(' · ')));
   meta.append(element('span', `meta-pill${game.mobileOrientation === 'landscape' ? ' orientation' : ''}`, orientationLabels[game.mobileOrientation]));
-  if (game.mobileSupport === 'unknown') meta.append(element('span', 'meta-pill', '모바일 지원 미확인'));
+  if (game.mobileSupport === 'unknown') meta.append(element('span', 'meta-pill', 'Mobile support unverified'));
   body.append(kicker, element('h3', 'card-title', game.title), element('p', 'card-subtitle', game.subtitle ?? ''), element('p', 'card-description', game.description), meta);
   if (game.status === 'published' && safePlayUrl(game.playUrl)) {
-    const link = element('a', 'play-link', '플레이하기');
+    const link = element('a', 'play-link', 'Play Now');
     link.href = game.playUrl;
-    link.setAttribute('aria-label', `${game.title} 플레이하기`);
+    link.setAttribute('aria-label', `Play ${game.title}`);
     const arrow = element('span', '', '↗'); arrow.setAttribute('aria-hidden', 'true'); link.append(arrow);
     body.append(link);
   } else {
-    body.append(element('span', 'play-link unavailable', '지금은 준비 중이에요'));
+    body.append(element('span', 'play-link unavailable', 'Not ready yet'));
   }
   article.append(picture, body);
   return article;
@@ -57,14 +57,14 @@ async function load() {
     if (catalog.schemaVersion !== 1 || !Array.isArray(catalog.games)) throw new Error('Invalid catalog');
     const games = visibleGames(catalog);
     grid.replaceChildren(...games.map(card));
-    if (!games.length) grid.append(element('p', 'load-message', '새로운 게임을 준비하고 있어요. 잠시 후 다시 방문해 주세요.'));
+    if (!games.length) grid.append(element('p', 'load-message', 'New games are on the way. Check back soon.'));
     count.textContent = String(games.length).padStart(2, '0');
     count.hidden = false;
   } catch {
     const message = element('div', 'load-message');
     message.setAttribute('role', 'alert');
-    message.append(element('p', '', '게임 목록을 불러오지 못했어요. 연결을 확인하고 다시 시도해 주세요.'));
-    const retry = element('button', '', '다시 불러오기'); retry.type = 'button';
+    message.append(element('p', '', 'Couldn’t load the game list. Check your connection and try again.'));
+    const retry = element('button', '', 'Try again'); retry.type = 'button';
     retry.addEventListener('click', load); message.append(retry);
     grid.replaceChildren(message); count.hidden = true;
   } finally { grid.setAttribute('aria-busy', 'false'); }
