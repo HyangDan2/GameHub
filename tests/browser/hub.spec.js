@@ -75,3 +75,14 @@ test('touch can launch a game', async ({ browser }) => {
   await page.getByRole('link', { name: `${game.title} 플레이하기` }).tap();
   await expect(page).toHaveURL(game.playUrl); await context.close();
 });
+test('HD2Lab brand and cross-hub navigation are linked', async ({ page }) => {
+  await page.goto('./');
+  await expect(page.locator('.brand .brand-name')).toHaveText('HD2Lab');
+  await expect(page.locator('.brand em')).toHaveText('GameHub');
+  await expect(page.getByRole('link', { name: 'ApplicationHub' })).toHaveAttribute('href', 'https://hyangdan2.github.io/ApplicationHub/');
+  await expect(page.getByRole('link', { name: 'TechnicalHub' })).toHaveAttribute('href', 'https://hyangdan2.github.io/TechnicalHub/');
+  await expect(page.locator('.web-hq-link')).toHaveAttribute('href', 'https://hyangdan2.github.io/');
+  await expect(page.locator('link[rel="icon"][type="image/svg+xml"]')).toHaveAttribute('href', './assets/branding/favicon.svg');
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('href', './assets/branding/apple-touch-icon.png');
+  await expect(page.locator('.mark')).toHaveCount(1);
+});

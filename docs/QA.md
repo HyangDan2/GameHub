@@ -45,3 +45,10 @@ Initial review date: 2026-10-20.
 - `npm run check:links` passed for all three published games (HTTP 200).
 - Browser layout coverage includes 360, 390, 768, and 1440 pixel widths; physical devices were not tested.
 - Production publication and hosted acceptance run through the Pages workflow for this release.
+
+## 2026-11-10 — HD2Lab brand alignment review
+
+- `npm run verify` passed on a fresh build: catalog/schema/assets/evidence validation (`Catalog valid: 4 games`), 7 deterministic tests, and 13 Chromium browser tests (the 12 existing checks plus a brand header, cross-hub link, and icon link check).
+- Visual review: full-page desktop (1440 px) and mobile (390 px) screenshots were retaken after the palette, mark, and navigation change. See [desktop](evidence/desktop.png) and [mobile](evidence/mobile.png).
+- Scope: markup, styles, favicons, share image, and hub links only. The game catalog, play destinations, storage behavior, and deployment workflow are unchanged.
+- Merge and hosted acceptance (`npm run verify:hosted`) are still pending; no claim is made about the deployed site in this review.
