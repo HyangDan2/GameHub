@@ -8,7 +8,7 @@ Read `GAMEHUB_GUIDE.md` before implementation or onboarding. Read `docs/OPERATIO
 - Public URL: `https://hyangdan2.github.io/GameHub/`.
 - Static HTML/CSS/JavaScript with catalog-driven rendering.
 - `data/games.json` is the only game list. Do not hardcode cards.
-- Keep documentation in English and the current UI in Korean.
+- Keep documentation and the interface in English.
 - Preserve independent game deployments and existing game storage.
 - The current task authorizes hub implementation and Pages deployment. Game-side return links are tracked separately; do not silently modify other repositories.
 

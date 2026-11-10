@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-11-10 — English interface
+
+- Localized the whole interface to English: page title and meta tags, skip link, header navigation ("Browse Games"), hero copy and CTA ("Find a Game ↓"), collection heading and note, loading, empty, error, and retry messages, guide section, collection bottom bar, card captions ("Official Art" / "Gameplay Screen"), input and orientation labels, and the play action ("Play Now ↗" with `aria-label="Play <title>"`).
+- Translated the four catalog descriptions in `data/games.json`; titles, subtitles, thumbnails, and play URLs are unchanged.
+- Updated the Chromium suite to the English labels and matched play links by exact accessible name so "VALKYRIE" no longer resolves "VALKYRIE EIRA".
+
 ## 2026-11-10 — HD2Lab brand alignment
 
 - Switched the palette from lime green to the HD2Lab signature orange (`--accent: #ff824f`) on the `#101110` ground.

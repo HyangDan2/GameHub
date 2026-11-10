@@ -17,7 +17,7 @@ Build and maintain a lightweight game discovery hub at:
 
 This guide governs the hub. Use [GAMEHUB_RETURN_GUIDE.md](GAMEHUB_RETURN_GUIDE.md) for changes inside game repositories.
 
-The initial release excludes accounts, shared leaderboards, cloud saves, embedded gameplay, a submission backend, and offline/PWA support. Documentation is in English. Product copy may follow the owner's chosen language; use consistent Korean interface copy initially unless instructed otherwise.
+The initial release excludes accounts, shared leaderboards, cloud saves, embedded gameplay, a submission backend, and offline/PWA support. Documentation is in English. Product copy may follow the owner's chosen language; the interface is in English.
 
 ## 2. Initial game catalog
 
