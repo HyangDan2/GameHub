@@ -84,5 +84,5 @@ test('HD2Lab brand and cross-hub navigation are linked', async ({ page }) => {
   await expect(page.locator('.web-hq-link')).toHaveAttribute('href', 'https://hyangdan2.github.io/');
   await expect(page.locator('link[rel="icon"][type="image/svg+xml"]')).toHaveAttribute('href', './assets/branding/favicon.svg');
   await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('href', './assets/branding/apple-touch-icon.png');
-  await expect(page.locator('.brand-logo')).toHaveCount(1);
+  await expect(page.locator('.mark')).toHaveCount(1);
 });
