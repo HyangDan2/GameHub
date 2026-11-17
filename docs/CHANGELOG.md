@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-11-18 — Shared hub navigation (desktop tabs + mobile drawer)
+
+- Replaced the header link row (`Browse Games`, `ApplicationHub ↗`, `TechnicalHub ↗`, `Web-HQ ↗`) with the Web-HQ category tabs: `Home · Apps · Play · Tech · Diary · About` in `.header-nav`. `Play` carries `.is-active` and `aria-current="page"`; the separate Web-HQ action link is gone because `Home` and the drawer cover it.
+- Added the mobile menu: a 44×44 `.menu-button` (≡) replaces the tabs at `<= 820px`, and `js/nav.js` (shared unchanged with Web-HQ, ApplicationHub, and TechnicalHub) unfolds the right `.mobile-drawer` over a blurred `.drawer-backdrop`. The drawer lists `00 / HQ`, `01 / APPS`, `02 / PLAY`, `03 / EXPLORE`, `04 / DIARY`, `05 / ABOUT` with `02 / PLAY` marked current; Escape, the close button, the backdrop, and a link tap close it, focus returns to the ≡ button, and `body.drawer-open` hides the floating `#theme-toggle`.
+- Header markup is now `.site-header > .header-inner.shell`, so the bar's hairline spans the viewport while the content keeps the shell width. Stylesheet cache buster → `?v=20261118-hub-nav`.
+- Tests: the brand check now asserts the six tabs, their destinations, the single `aria-current`, and that `.web-hq-link` / `.hub-link` are gone; a new Chromium check drives the drawer end to end. `npm run verify` passes: 4 games validated, 7 unit checks, 17 Chromium checks.
+
 ## 2026-11-16 — Soft Iris (white & violet) design language
 
 - Re-skinned the hub to the Soft Iris tokens from `HyangDan2/Server-HQ` (`HD2Lab/hub-common.css`): `--bg #FAFAFD`, `--panel #FFFFFF`, `--panel-soft #F4F1FC`, `--line #E8E4F2`, `--line-strong #D4CCE8`, `--ink #1D192B`, `--muted #68627A`, `--dim #8A839C`, `--accent #8B6CE8`, `--accent-hover #7655D9`, `--accent-text #6B4CD6`, `--accent-soft #F1ECFE`, `color-scheme: light`. Small accent labels (nav-current, count, card kicker, orientation, guide numbers) use `--accent-text`; primary buttons are `#8B6CE8` with white text.
