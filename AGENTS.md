@@ -11,7 +11,7 @@ Read `GAMEHUB_GUIDE.md` before implementation or onboarding. Read `docs/OPERATIO
 - Keep documentation and the interface in English.
 - Preserve independent game deployments and existing game storage.
 - The current task authorizes hub implementation and Pages deployment. Game-side return links are tracked separately; do not silently modify other repositories.
-- Theme: Soft Iris stays the default. The fixed bottom-right toggle (`#theme-toggle`, `js/theme.js`) switches to Navy & Lavender dark, whose tokens live in the `[data-theme="dark"]` block of `css/style.css`; the choice is stored in `localStorage('hd2-theme')` and applied by the inline `<head>` snippet before first paint. New colors belong on those tokens, not on hex literals.
+- Theme: Soft Iris stays the default. The fixed bottom-right toggle (`#theme-toggle`, `js/theme.js`) is the HD2Lab standard 44×44 round icon button — a single-stroke moon in light mode, a single-stroke sun in dark mode, no text label — and switches to Navy & Lavender dark, whose tokens live in the `[data-theme="dark"]` block of `css/style.css`; the choice is stored in `localStorage('hd2-theme')` and applied by the inline `<head>` snippet before first paint. New colors belong on those tokens, not on hex literals.
 
 ## Commands
 
