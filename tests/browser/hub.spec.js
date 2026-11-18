@@ -98,7 +98,26 @@ test('HD2Lab brand and the shared hub tabs are linked', async ({ page }) => {
   await expect(page.locator('.header-inner .mark')).toHaveCount(1);
 });
 
-test('the mobile ≡ unfolds the right drawer as a one-line list with a Diary accordion', async ({ page }) => {
+const APPS_MENU = [
+  ['Todo Master', 'https://hyangdan2.github.io/AGPilot0002/'],
+  ['Photos', 'https://hyangdan2.github.io/PKPilot0001/'],
+  ['Midpoint', 'https://hyangdan2.github.io/PKPilot0002/'],
+  ['Film Studio', 'https://hyangdan2.github.io/AGPilot0007/'],
+  ['Shutterplate', 'https://hyangdan2.github.io/PKPilot0003/'],
+  ['DOS Player', 'https://hyangdan2.github.io/PKPilot0006/'],
+  ['Markdown Viewer', 'https://hyangdan2.github.io/PKPilot0008/'],
+  ['Machine Learning Lab', 'https://hyangdan2.github.io/EDPilot0001/'],
+];
+const PUBLIC_GAMES = catalog.games.filter(game => game.status !== 'draft');
+const PLAY_MENU = PUBLIC_GAMES.map(game => [game.title, game.playUrl]);
+const DIARY_MENU = [
+  ['Devlog', 'https://hyangdan2.github.io/diary/categories/devlog/'],
+  ['Architecture', 'https://hyangdan2.github.io/diary/categories/architecture/'],
+  ['Troubleshooting', 'https://hyangdan2.github.io/diary/categories/troubleshooting/'],
+  ['Notes', 'https://hyangdan2.github.io/diary/categories/notes/'],
+];
+
+test('the mobile ≡ unfolds the right drawer as a one-line list whose Apps, Play, and Diary rows unfold on their own', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('./');
   await expect(page.locator('.header-nav')).toBeHidden();
@@ -128,41 +147,65 @@ test('the mobile ≡ unfolds the right drawer as a one-line list with a Diary ac
   await expect(drawer.locator('.drawer-item-meta, .drawer-item-desc')).toHaveCount(0);
   await expect(drawer.locator('[aria-current="page"]')).toHaveCount(1);
   await expect(drawer.locator('[aria-current="page"]')).toHaveText('Play');
+  // Web-HQ (Home), Tech, and About stay plain links: exactly three accordions.
+  await expect(drawer.locator('.drawer-group')).toHaveCount(3);
+  // No "Top" entry in any section list: the row label above is the top page.
+  await expect(drawer.locator('.drawer-sub a').filter({ hasText: /^Top$/ })).toHaveCount(0);
 
-  // Diary keeps its own link and unfolds the five sections from the caret.
-  const diaryRow = drawer.locator('.drawer-split .drawer-item');
-  await expect(diaryRow).toHaveAttribute('href', 'https://hyangdan2.github.io/diary/');
-  const toggle = drawer.getByRole('button', { name: 'Diary sections' });
-  const sections = drawer.locator('.drawer-sub');
-  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-  expect(Math.round(await sections.evaluate(node => node.getBoundingClientRect().height))).toBe(0);
-  expect(await sections.locator('a').first().evaluate(node => node.closest('[inert]') !== null)).toBe(true);
+  const group = key => drawer.locator(`.drawer-group[data-drawer-group="${key}"]`);
+  const heightOf = locator => locator.evaluate(node => Math.round(node.getBoundingClientRect().height));
+  const linksOf = key => group(key).locator('.drawer-sub a');
 
-  await toggle.click();
-  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-  await expect(sections.locator('a')).toHaveCount(5);
-  const expected = [
-    ['Top', 'https://hyangdan2.github.io/diary/'],
-    ['Devlog', 'https://hyangdan2.github.io/diary/categories/devlog/'],
-    ['Architecture', 'https://hyangdan2.github.io/diary/categories/architecture/'],
-    ['Troubleshooting', 'https://hyangdan2.github.io/diary/categories/troubleshooting/'],
-    ['Notes', 'https://hyangdan2.github.io/diary/categories/notes/'],
-  ];
-  for (const [index, [label, href]] of expected.entries()) {
-    await expect(sections.locator('a').nth(index)).toHaveText(label);
-    await expect(sections.locator('a').nth(index)).toHaveAttribute('href', href);
+  // Play is the hub you are on, so its group starts unfolded.
+  const playToggle = drawer.getByRole('button', { name: 'Play sections' });
+  await expect(playToggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(linksOf('play')).toHaveCount(PLAY_MENU.length);
+  for (const [index, [label, href]] of PLAY_MENU.entries()) {
+    await expect(linksOf('play').nth(index)).toHaveText(label);
+    await expect(linksOf('play').nth(index)).toHaveAttribute('href', href);
   }
-  await expect.poll(() => sections.evaluate(node => Math.round(node.getBoundingClientRect().height))).toBeGreaterThan(190);
-  expect(await sections.locator('a').first().evaluate(node => node.closest('[inert]') !== null)).toBe(false);
+  expect(await heightOf(group('play').locator('.drawer-sub'))).toBeGreaterThan(PLAY_MENU.length * 38);
+
+  // Apps starts closed and unfolds without touching Play.
+  const appsToggle = drawer.getByRole('button', { name: 'Apps sections' });
+  await expect(appsToggle).toHaveAttribute('aria-expanded', 'false');
+  expect(await heightOf(group('apps').locator('.drawer-sub'))).toBe(0);
+  expect(await linksOf('apps').first().evaluate(node => node.closest('[inert]') !== null)).toBe(true);
+  await appsToggle.click();
+  await expect(appsToggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(linksOf('apps')).toHaveCount(APPS_MENU.length);
+  for (const [index, [label, href]] of APPS_MENU.entries()) {
+    await expect(linksOf('apps').nth(index)).toHaveText(label);
+    await expect(linksOf('apps').nth(index)).toHaveAttribute('href', href);
+  }
+  await expect.poll(() => heightOf(group('apps').locator('.drawer-sub'))).toBeGreaterThan(APPS_MENU.length * 38);
+  expect(await linksOf('apps').first().evaluate(node => node.closest('[inert]') !== null)).toBe(false);
+  await expect(playToggle).toHaveAttribute('aria-expanded', 'true');
+
+  // Diary is its own accordion with the four categories under it.
+  const diaryRow = group('diary').locator('.drawer-split .drawer-item');
+  await expect(diaryRow).toHaveAttribute('href', 'https://hyangdan2.github.io/diary/');
+  const diaryToggle = drawer.getByRole('button', { name: 'Diary sections' });
+  await expect(diaryToggle).toHaveAttribute('aria-expanded', 'false');
+  await diaryToggle.click();
+  await expect(diaryToggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(linksOf('diary')).toHaveCount(DIARY_MENU.length);
+  for (const [index, [label, href]] of DIARY_MENU.entries()) {
+    await expect(linksOf('diary').nth(index)).toHaveText(label);
+    await expect(linksOf('diary').nth(index)).toHaveAttribute('href', href);
+  }
+  await expect.poll(() => heightOf(group('diary').locator('.drawer-sub'))).toBeGreaterThan(150);
   const diaryLeft = (await diaryRow.boundingBox()).x;
-  const sectionLeft = (await sections.locator('a').first().boundingBox()).x;
+  const sectionLeft = (await linksOf('diary').first().boundingBox()).x;
   expect(sectionLeft - diaryLeft).toBeGreaterThanOrEqual(12);
-  expect(await sections.locator('a').first().evaluate(node => getComputedStyle(node).paddingLeft)).toBe('20px');
+  expect(await linksOf('diary').first().evaluate(node => getComputedStyle(node).paddingLeft)).toBe('20px');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 
-  await toggle.click();
-  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-  await expect.poll(() => sections.evaluate(node => Math.round(node.getBoundingClientRect().height))).toBe(0);
+  await appsToggle.click();
+  await diaryToggle.click();
+  await expect(appsToggle).toHaveAttribute('aria-expanded', 'false');
+  await expect.poll(() => heightOf(group('apps').locator('.drawer-sub'))).toBe(0);
+  await expect.poll(() => heightOf(group('diary').locator('.drawer-sub'))).toBe(0);
 
   await expect.poll(() => page.locator('#theme-toggle').evaluate(node => getComputedStyle(node).opacity)).toBe('0');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -173,38 +216,44 @@ test('the mobile ≡ unfolds the right drawer as a one-line list with a Diary ac
   await expect(menu).toBeFocused();
 });
 
-test('the Diary tab unfolds its five sections on hover and keeps its own link', async ({ page }) => {
+test('the Apps, Play, and Diary tabs unfold their sections on hover and keep their own links', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('./');
-  const diaryTab = page.locator('.nav-dropdown .nav-tab');
-  await expect(diaryTab).toHaveText('Diary');
-  await expect(diaryTab).toHaveAttribute('href', 'https://hyangdan2.github.io/diary/');
-  const panel = page.locator('.nav-dropdown-panel');
-  const visibility = () => panel.evaluate(node => getComputedStyle(node).visibility);
-  expect(await visibility()).toBe('hidden');
+  const menus = [
+    ['apps', 'Apps', 'https://hyangdan2.github.io/ApplicationHub/', APPS_MENU],
+    ['play', 'Play', 'https://hyangdan2.github.io/GameHub/', PLAY_MENU],
+    ['diary', 'Diary', 'https://hyangdan2.github.io/diary/', DIARY_MENU],
+  ];
+  for (const [key, label, href, entries] of menus) {
+    const wrapper = page.locator(`.nav-dropdown[data-nav-group="${key}"]`);
+    const tab = wrapper.locator('.nav-tab');
+    await expect(tab).toHaveText(label);
+    await expect(tab).toHaveAttribute('href', href);
+    const panel = wrapper.locator('.nav-dropdown-panel');
+    const visibility = () => panel.evaluate(node => getComputedStyle(node).visibility);
+    expect(await visibility()).toBe('hidden');
 
-  await diaryTab.hover();
-  await expect.poll(visibility).toBe('visible');
-  await expect(panel.locator('a')).toHaveCount(5);
-  await expect(panel.locator('a').nth(0)).toHaveText('Top');
-  await expect(panel.locator('a').nth(0)).toHaveAttribute('href', 'https://hyangdan2.github.io/diary/');
-  await expect(panel.locator('a').nth(1)).toHaveText('Devlog');
-  await expect(panel.locator('a').nth(1)).toHaveAttribute('href', 'https://hyangdan2.github.io/diary/categories/devlog/');
-  await expect(panel.locator('a').nth(2)).toHaveText('Architecture');
-  await expect(panel.locator('a').nth(3)).toHaveText('Troubleshooting');
-  await expect(panel.locator('a').nth(4)).toHaveAttribute('href', 'https://hyangdan2.github.io/diary/categories/notes/');
-  await expect(panel.locator('a').nth(0)).toBeVisible();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await tab.hover();
+    await expect.poll(visibility).toBe('visible');
+    await expect(panel.locator('a')).toHaveCount(entries.length);
+    for (const [index, [text, target]] of entries.entries()) {
+      await expect(panel.locator('a').nth(index)).toHaveText(text);
+      await expect(panel.locator('a').nth(index)).toHaveAttribute('href', target);
+    }
+    await expect(panel.locator('a').filter({ hasText: /^Top$/ })).toHaveCount(0);
+    await expect(panel.locator('a').first()).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 
-  await page.mouse.move(10, 600);
-  await expect.poll(visibility).toBe('hidden');
+    await page.mouse.move(10, 600);
+    await expect.poll(visibility).toBe('hidden');
 
-  // Keyboard users reach the sections by focusing the tab, then tabbing in.
-  await diaryTab.focus();
-  await expect.poll(visibility).toBe('visible');
-  await page.keyboard.press('Tab');
-  await expect(panel.locator('a').nth(0)).toBeFocused();
-  await page.keyboard.press('Tab');
-  await expect(panel.locator('a').nth(1)).toBeFocused();
-  await expect.poll(visibility).toBe('visible');
+    // Keyboard users reach the sections by focusing the tab, then tabbing in.
+    await tab.focus();
+    await expect.poll(visibility).toBe('visible');
+    await page.keyboard.press('Tab');
+    await expect(panel.locator('a').first()).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(panel.locator('a').nth(1)).toBeFocused();
+    await expect.poll(visibility).toBe('visible');
+  }
 });
