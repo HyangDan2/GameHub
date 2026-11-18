@@ -28,7 +28,7 @@ test('keyboard navigation has visible focus and activates a game', async ({ page
   await page.keyboard.press('Tab'); await expect(page.getByText('Skip to games')).toBeFocused();
   const game = gameById('particle-beat');
   const target = page.getByRole('link', { name: `Play ${game.title}`, exact: true });
-  for (let i = 0; i < 12 && !(await target.evaluate(el => el === document.activeElement)); i++) await page.keyboard.press('Tab');
+  for (let i = 0; i < 20 && !(await target.evaluate(el => el === document.activeElement)); i++) await page.keyboard.press('Tab');
   await expect(target).toBeFocused();
   expect(await target.evaluate(el => getComputedStyle(el).outlineStyle)).toBe('solid');
   await page.route(game.playUrl, route => route.fulfill({ body: 'Destination' }));
@@ -79,7 +79,7 @@ test('HD2Lab brand and the shared hub tabs are linked', async ({ page }) => {
   await page.goto('./');
   await expect(page.locator('.brand .brand-name')).toHaveText('HD2Lab');
   await expect(page.locator('.brand em')).toHaveText('GameHub');
-  // One tab row for the whole family: Home, Apps, Play, Tech, Diary, About.
+  // One tab row for the whole family: Home, Apps, Play, Tech, Diary (dropdown), About.
   const tabs = page.locator('.header-nav .nav-tab');
   await expect(tabs).toHaveCount(6);
   await expect(tabs.nth(0)).toHaveAttribute('href', 'https://hyangdan2.github.io/');
@@ -98,7 +98,7 @@ test('HD2Lab brand and the shared hub tabs are linked', async ({ page }) => {
   await expect(page.locator('.header-inner .mark')).toHaveCount(1);
 });
 
-test('the mobile ≡ unfolds the right drawer with the full hub list', async ({ page }) => {
+test('the mobile ≡ unfolds the right drawer as a one-line list with a Diary accordion', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('./');
   await expect(page.locator('.header-nav')).toBeHidden();
@@ -113,17 +113,57 @@ test('the mobile ≡ unfolds the right drawer with the full hub list', async ({ 
   await expect(menu).toHaveAttribute('aria-expanded', 'true');
   await expect(page.locator('body')).toHaveClass(/drawer-open/);
   await expect(page.locator('.drawer-backdrop')).toBeVisible();
+
+  // One compact line per hub: no index meta, no description card.
   const items = drawer.locator('.drawer-item');
   await expect(items).toHaveCount(6);
-  await expect(items.nth(0)).toContainText('00 / HQ');
-  await expect(items.nth(1)).toContainText('01 / APPS');
-  await expect(items.nth(2)).toContainText('02 / PLAY');
-  await expect(items.nth(3)).toContainText('03 / EXPLORE');
-  await expect(items.nth(4)).toContainText('04 / DIARY');
-  await expect(items.nth(5)).toContainText('05 / ABOUT');
+  for (const [index, label] of ['Web-HQ', 'Apps', 'Play', 'Tech', 'Diary', 'About'].entries()) {
+    await expect(items.nth(index)).toHaveText(label);
+    const row = await items.nth(index).boundingBox();
+    expect(row.height).toBeGreaterThanOrEqual(44);
+    expect(row.height).toBeLessThanOrEqual(48);
+  }
+  await expect(items.nth(0)).toHaveAttribute('href', 'https://hyangdan2.github.io/');
   await expect(items.nth(5)).toHaveAttribute('href', 'https://hyangdan2.github.io/about/');
+  await expect(drawer.locator('.drawer-item-meta, .drawer-item-desc')).toHaveCount(0);
   await expect(drawer.locator('[aria-current="page"]')).toHaveCount(1);
-  await expect(drawer.locator('[aria-current="page"]')).toContainText('GameHub');
+  await expect(drawer.locator('[aria-current="page"]')).toHaveText('Play');
+
+  // Diary keeps its own link and unfolds the five sections from the caret.
+  const diaryRow = drawer.locator('.drawer-split .drawer-item');
+  await expect(diaryRow).toHaveAttribute('href', 'https://hyangdan2.github.io/diary/');
+  const toggle = drawer.getByRole('button', { name: 'Diary sections' });
+  const sections = drawer.locator('.drawer-sub');
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  expect(Math.round(await sections.evaluate(node => node.getBoundingClientRect().height))).toBe(0);
+  expect(await sections.locator('a').first().evaluate(node => node.closest('[inert]') !== null)).toBe(true);
+
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(sections.locator('a')).toHaveCount(5);
+  const expected = [
+    ['Top', 'https://hyangdan2.github.io/diary/'],
+    ['Devlog', 'https://hyangdan2.github.io/diary/categories/devlog/'],
+    ['Architecture', 'https://hyangdan2.github.io/diary/categories/architecture/'],
+    ['Troubleshooting', 'https://hyangdan2.github.io/diary/categories/troubleshooting/'],
+    ['Notes', 'https://hyangdan2.github.io/diary/categories/notes/'],
+  ];
+  for (const [index, [label, href]] of expected.entries()) {
+    await expect(sections.locator('a').nth(index)).toHaveText(label);
+    await expect(sections.locator('a').nth(index)).toHaveAttribute('href', href);
+  }
+  await expect.poll(() => sections.evaluate(node => Math.round(node.getBoundingClientRect().height))).toBeGreaterThan(190);
+  expect(await sections.locator('a').first().evaluate(node => node.closest('[inert]') !== null)).toBe(false);
+  const diaryLeft = (await diaryRow.boundingBox()).x;
+  const sectionLeft = (await sections.locator('a').first().boundingBox()).x;
+  expect(sectionLeft - diaryLeft).toBeGreaterThanOrEqual(12);
+  expect(await sections.locator('a').first().evaluate(node => getComputedStyle(node).paddingLeft)).toBe('20px');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await expect.poll(() => sections.evaluate(node => Math.round(node.getBoundingClientRect().height))).toBe(0);
+
   await expect.poll(() => page.locator('#theme-toggle').evaluate(node => getComputedStyle(node).opacity)).toBe('0');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.keyboard.press('Escape');
@@ -131,4 +171,40 @@ test('the mobile ≡ unfolds the right drawer with the full hub list', async ({ 
   await expect(menu).toHaveAttribute('aria-expanded', 'false');
   await expect(page.locator('body')).not.toHaveClass(/drawer-open/);
   await expect(menu).toBeFocused();
+});
+
+test('the Diary tab unfolds its five sections on hover and keeps its own link', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('./');
+  const diaryTab = page.locator('.nav-dropdown .nav-tab');
+  await expect(diaryTab).toHaveText('Diary');
+  await expect(diaryTab).toHaveAttribute('href', 'https://hyangdan2.github.io/diary/');
+  const panel = page.locator('.nav-dropdown-panel');
+  const visibility = () => panel.evaluate(node => getComputedStyle(node).visibility);
+  expect(await visibility()).toBe('hidden');
+
+  await diaryTab.hover();
+  await expect.poll(visibility).toBe('visible');
+  await expect(panel.locator('a')).toHaveCount(5);
+  await expect(panel.locator('a').nth(0)).toHaveText('Top');
+  await expect(panel.locator('a').nth(0)).toHaveAttribute('href', 'https://hyangdan2.github.io/diary/');
+  await expect(panel.locator('a').nth(1)).toHaveText('Devlog');
+  await expect(panel.locator('a').nth(1)).toHaveAttribute('href', 'https://hyangdan2.github.io/diary/categories/devlog/');
+  await expect(panel.locator('a').nth(2)).toHaveText('Architecture');
+  await expect(panel.locator('a').nth(3)).toHaveText('Troubleshooting');
+  await expect(panel.locator('a').nth(4)).toHaveAttribute('href', 'https://hyangdan2.github.io/diary/categories/notes/');
+  await expect(panel.locator('a').nth(0)).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+
+  await page.mouse.move(10, 600);
+  await expect.poll(visibility).toBe('hidden');
+
+  // Keyboard users reach the sections by focusing the tab, then tabbing in.
+  await diaryTab.focus();
+  await expect.poll(visibility).toBe('visible');
+  await page.keyboard.press('Tab');
+  await expect(panel.locator('a').nth(0)).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(panel.locator('a').nth(1)).toBeFocused();
+  await expect.poll(visibility).toBe('visible');
 });
