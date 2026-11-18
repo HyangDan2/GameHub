@@ -28,7 +28,9 @@ test('keyboard navigation has visible focus and activates a game', async ({ page
   await page.keyboard.press('Tab'); await expect(page.getByText('Skip to games')).toBeFocused();
   const game = gameById('particle-beat');
   const target = page.getByRole('link', { name: `Play ${game.title}`, exact: true });
-  for (let i = 0; i < 20 && !(await target.evaluate(el => el === document.activeElement)); i++) await page.keyboard.press('Tab');
+  // The three dropdown tabs add their panels to the tab order while focused,
+  // so the card sits further down the sequence than it used to.
+  for (let i = 0; i < 60 && !(await target.evaluate(el => el === document.activeElement)); i++) await page.keyboard.press('Tab');
   await expect(target).toBeFocused();
   expect(await target.evaluate(el => getComputedStyle(el).outlineStyle)).toBe('solid');
   await page.route(game.playUrl, route => route.fulfill({ body: 'Destination' }));
