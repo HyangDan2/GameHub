@@ -107,7 +107,7 @@ const APPS_MENU = [
   ['Film Studio', 'https://hyangdan2.github.io/AGPilot0007/'],
   ['Shutterplate', 'https://hyangdan2.github.io/PKPilot0003/'],
   ['DOS Player', 'https://hyangdan2.github.io/PKPilot0006/'],
-  ['Markdown Viewer', 'https://hyangdan2.github.io/PKPilot0008/'],
+  ['HD2Markdown Viewer', 'https://hyangdan2.github.io/PKPilot0008/'],
   ['Machine Learning Lab', 'https://hyangdan2.github.io/EDPilot0001/'],
 ];
 const PUBLIC_GAMES = catalog.games.filter(game => game.status !== 'draft');
