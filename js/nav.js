@@ -10,22 +10,36 @@
   const drawer = document.getElementById('mobile-drawer');
   if (!menuButton || !drawer) return;
 
-  // Section accordions (Apps, Play, Diary): each group unfolds on its own. A
-  // collapsed panel keeps its height transition, so the links inside must leave
-  // the tab order some other way than display:none.
-  drawer.querySelectorAll('.drawer-group').forEach(group => {
+  // Section accordions (Apps, Play, Diary, Info): unfolding one group folds the
+  // others, so a long section such as Apps never pushes About off the drawer.
+  // A collapsed panel keeps its height transition, so the links inside must
+  // leave the tab order some other way than display:none.
+  const groups = Array.from(drawer.querySelectorAll('.drawer-group'));
+  const setOpen = (group, open) => {
     const toggle = group.querySelector('.drawer-toggle');
     const panel = group.querySelector('.drawer-sub');
     if (!toggle || !panel) return;
-    const setOpen = open => {
-      group.classList.toggle('is-open', open);
-      toggle.setAttribute('aria-expanded', String(open));
-      panel.inert = !open;
-      if (open) panel.removeAttribute('aria-hidden');
-      else panel.setAttribute('aria-hidden', 'true');
-    };
-    setOpen(toggle.getAttribute('aria-expanded') === 'true');
-    toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+    group.classList.toggle('is-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    panel.inert = !open;
+    if (open) {
+      panel.removeAttribute('aria-hidden');
+      // Reopening a scrolled section starts it at its first row again.
+      const list = panel.querySelector('.drawer-sub-inner') || panel;
+      list.scrollTop = 0;
+    } else {
+      panel.setAttribute('aria-hidden', 'true');
+    }
+  };
+  groups.forEach(group => {
+    const toggle = group.querySelector('.drawer-toggle');
+    if (!toggle) return;
+    setOpen(group, toggle.getAttribute('aria-expanded') === 'true');
+    toggle.addEventListener('click', () => {
+      const open = toggle.getAttribute('aria-expanded') !== 'true';
+      if (open) groups.forEach(other => { if (other !== group) setOpen(other, false); });
+      setOpen(group, open);
+    });
   });
 
   const backdrop = document.querySelector('.drawer-backdrop');

@@ -112,6 +112,13 @@ const APPS_MENU = [
   ['DOS Player', 'https://hyangdan2.github.io/PKPilot0006/'],
   ['HD2Markdown Viewer', 'https://hyangdan2.github.io/PKPilot0008/'],
   ['Machine Learning Lab', 'https://hyangdan2.github.io/EDPilot0001/'],
+  ['Nordlys', 'https://hyangdan2.github.io/PKPilot0011/'],
+  ['Vektra Vár', 'https://hyangdan2.github.io/PKPilot0012/'],
+  ['Vísna Sól', 'https://hyangdan2.github.io/PKPilot0013/'],
+  ['Sága Glitra', 'https://hyangdan2.github.io/PKPilot0014/'],
+  ['Mynda Ljósa', 'https://hyangdan2.github.io/PKPilot0015/'],
+  ['Hlýja Hljóm', 'https://hyangdan2.github.io/PKPilot0016/'],
+  ['Slinga', 'https://hyangdan2.github.io/PKPilot0017/'],
 ];
 const PUBLIC_GAMES = catalog.games.filter(game => game.status !== 'draft');
 const PLAY_MENU = PUBLIC_GAMES.map(game => [game.title, game.playUrl]);
@@ -126,7 +133,7 @@ const INFO_MENU = [
   ['US Markets', 'https://hyangdan2.github.io/InformationHub/us-markets/'],
 ];
 
-test('the mobile ≡ unfolds the right drawer as a one-line list whose Apps, Play, Diary, and Info rows unfold on their own', async ({ page }) => {
+test('the mobile ≡ unfolds the right drawer as a one-line list whose Apps, Play, Diary, and Info rows unfold one at a time', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('./');
   await expect(page.locator('.header-nav')).toBeHidden();
@@ -176,7 +183,8 @@ test('the mobile ≡ unfolds the right drawer as a one-line list whose Apps, Pla
   }
   expect(await heightOf(group('play').locator('.drawer-sub'))).toBeGreaterThan(PLAY_MENU.length * 38);
 
-  // Apps starts closed and unfolds without touching Play.
+  // Apps starts closed; unfolding it folds Play, so the drawer never grows past
+  // one section. Its 15 apps live in a five-row window that scrolls.
   const appsToggle = drawer.getByRole('button', { name: 'Apps sections' });
   await expect(appsToggle).toHaveAttribute('aria-expanded', 'false');
   expect(await heightOf(group('apps').locator('.drawer-sub'))).toBe(0);
@@ -188,9 +196,20 @@ test('the mobile ≡ unfolds the right drawer as a one-line list whose Apps, Pla
     await expect(linksOf('apps').nth(index)).toHaveText(label);
     await expect(linksOf('apps').nth(index)).toHaveAttribute('href', href);
   }
-  await expect.poll(() => heightOf(group('apps').locator('.drawer-sub'))).toBeGreaterThan(APPS_MENU.length * 38);
+  await expect.poll(() => heightOf(group('apps').locator('.drawer-sub'))).toBeGreaterThan(200);
+  expect(await heightOf(group('apps').locator('.drawer-sub'))).toBeLessThanOrEqual(230);
+  const appsList = await group('apps').locator('.drawer-sub').evaluate(node => ({
+    client: node.clientHeight,
+    scroll: node.scrollHeight,
+  }));
+  expect(appsList.client).toBeLessThanOrEqual(230);
+  expect(appsList.scroll).toBeGreaterThan(appsList.client);
   expect(await linksOf('apps').first().evaluate(node => node.closest('[inert]') !== null)).toBe(false);
-  await expect(playToggle).toHaveAttribute('aria-expanded', 'true');
+  // Play folded when Apps unfolded: one section open at a time.
+  await expect(playToggle).toHaveAttribute('aria-expanded', 'false');
+  await expect.poll(() => heightOf(group('play').locator('.drawer-sub'))).toBe(0);
+  // About stays on screen even with Apps open, because the list scrolls.
+  await expect(drawer.locator('.drawer-item').filter({ hasText: /^About$/ })).toBeInViewport();
 
   // Diary is its own accordion with the four categories under it.
   const diaryRow = group('diary').locator('.drawer-split .drawer-item');
@@ -205,6 +224,7 @@ test('the mobile ≡ unfolds the right drawer as a one-line list whose Apps, Pla
     await expect(linksOf('diary').nth(index)).toHaveAttribute('href', href);
   }
   await expect.poll(() => heightOf(group('diary').locator('.drawer-sub'))).toBeGreaterThan(150);
+  await expect(appsToggle).toHaveAttribute('aria-expanded', 'false');
 
   // Info is its own accordion with the China AI channel under it.
   const infoRow = group('info').locator('.drawer-split .drawer-item');
@@ -219,6 +239,7 @@ test('the mobile ≡ unfolds the right drawer as a one-line list whose Apps, Pla
     await expect(linksOf('info').nth(index)).toHaveAttribute('href', href);
   }
   await expect.poll(() => heightOf(group('info').locator('.drawer-sub'))).toBeGreaterThan(38);
+  await expect(diaryToggle).toHaveAttribute('aria-expanded', 'false');
   const infoLeft = (await infoRow.boundingBox()).x;
   expect((await linksOf('info').first().boundingBox()).x - infoLeft).toBeGreaterThanOrEqual(12);
 
@@ -228,8 +249,18 @@ test('the mobile ≡ unfolds the right drawer as a one-line list whose Apps, Pla
   expect(await linksOf('diary').first().evaluate(node => getComputedStyle(node).paddingLeft)).toBe('20px');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 
+  // One section at a time: each click opens its own group and folds the last,
+  // so a single click on the open row is what folds it back.
   await appsToggle.click();
+  await expect(appsToggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(diaryToggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(infoToggle).toHaveAttribute('aria-expanded', 'false');
   await diaryToggle.click();
+  await expect(diaryToggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(appsToggle).toHaveAttribute('aria-expanded', 'false');
+  await infoToggle.click();
+  await expect(infoToggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(diaryToggle).toHaveAttribute('aria-expanded', 'false');
   await infoToggle.click();
   await expect(appsToggle).toHaveAttribute('aria-expanded', 'false');
   await expect(diaryToggle).toHaveAttribute('aria-expanded', 'false');
@@ -274,6 +305,28 @@ test('the Apps, Play, Diary, and Info tabs unfold their sections on hover and ke
     }
     await expect(panel.locator('a').filter({ hasText: /^Top$/ })).toHaveCount(0);
     await expect(panel.locator('a').first()).toBeVisible();
+    if (key === 'apps') {
+      // 15 apps, a five-row window: the panel scrolls instead of running down
+      // the page, and the pointer can still travel from the tab into it.
+      const box = await panel.evaluate(node => ({ client: node.clientHeight, scroll: node.scrollHeight }));
+      expect(box.client).toBeLessThanOrEqual(230);
+      expect(box.scroll).toBeGreaterThan(box.client);
+      expect(await panel.evaluate(node => getComputedStyle(node).overflowY)).toBe('auto');
+      expect(await panel.evaluate(node => getComputedStyle(node).scrollbarWidth)).toBe('thin');
+      const tabBox = await tab.boundingBox();
+      const panelBox = await panel.boundingBox();
+      await page.mouse.move(tabBox.x + tabBox.width / 2, tabBox.y + tabBox.height / 2);
+      await page.mouse.move(panelBox.x + panelBox.width / 2, panelBox.y + 20, { steps: 8 });
+      await page.waitForTimeout(150);
+      await expect.poll(visibility).toBe('visible');
+      await page.mouse.wheel(0, 400);
+      await page.waitForTimeout(150);
+      expect(await panel.evaluate(node => node.scrollTop)).toBeGreaterThan(0);
+      await expect(panel.locator('a').last()).toBeInViewport();
+      await panel.evaluate(node => { node.scrollTop = 0; });
+      await page.mouse.move(10, 600);
+      await expect.poll(visibility).toBe('hidden');
+    }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 
     await page.mouse.move(10, 600);
