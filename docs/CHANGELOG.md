@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-11-21 — Diary-style social card
+
+- Replaced `assets/branding/share.png` (1200×630) with the `HD2's Diary` share-card layout: Soft Iris wash, dual-skew `.mark` + `HD2Lab | GameHub` header, `Pick your / next play.` headline, the hero description and two chips on the left, and one white summary card on the right listing the four published games with their subtitle and genre (VALKYRIE EIRA · Skybreak · Shooter, Particle Beat · Rhythm, VALKYRIE · Action, ChibiLink · Puzzle).
+- `og:image` / `twitter:image` cache buster → `?v=20261121-og` in `index.html`. `og:title`, `og:description`, the favicon set, and the GoatCounter snippet are unchanged.
+
 ## 2026-11-18 — Shared hub navigation (desktop tabs + mobile drawer)
 
 - Replaced the header link row (`Browse Games`, `ApplicationHub ↗`, `TechnicalHub ↗`, `Web-HQ ↗`) with the Web-HQ category tabs: `Home · Apps · Play · Tech · Diary · About` in `.header-nav`. `Play` carries `.is-active` and `aria-current="page"`; the separate Web-HQ action link is gone because `Home` and the drawer cover it.
