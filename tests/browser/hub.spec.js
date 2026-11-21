@@ -104,8 +104,6 @@ test('HD2Lab brand and the shared hub tabs are linked', async ({ page }) => {
 });
 
 const APPS_MENU = [
-  ['Todo Master', 'https://hyangdan2.github.io/AGPilot0002/'],
-  ['Photos', 'https://hyangdan2.github.io/PKPilot0001/'],
   ['Midpoint', 'https://hyangdan2.github.io/PKPilot0002/'],
   ['Film Studio', 'https://hyangdan2.github.io/AGPilot0007/'],
   ['Shutterplate', 'https://hyangdan2.github.io/PKPilot0003/'],
@@ -117,8 +115,6 @@ const APPS_MENU = [
   ['Vísna Sól', 'https://hyangdan2.github.io/PKPilot0013/'],
   ['Sága Glitra', 'https://hyangdan2.github.io/PKPilot0014/'],
   ['Mynda Ljósa', 'https://hyangdan2.github.io/PKPilot0015/'],
-  ['Hlýja Hljóm', 'https://hyangdan2.github.io/PKPilot0016/'],
-  ['Slinga', 'https://hyangdan2.github.io/PKPilot0017/'],
 ];
 const PUBLIC_GAMES = catalog.games.filter(game => game.status !== 'draft');
 const PLAY_MENU = PUBLIC_GAMES.map(game => [game.title, game.playUrl]);
@@ -184,7 +180,7 @@ test('the mobile ≡ unfolds the right drawer as a one-line list whose Apps, Pla
   expect(await heightOf(group('play').locator('.drawer-sub'))).toBeGreaterThan(PLAY_MENU.length * 38);
 
   // Apps starts closed; unfolding it folds Play, so the drawer never grows past
-  // one section. Its 15 apps live in a five-row window that scrolls.
+  // one section. Its 11 apps live in a five-row window that scrolls.
   const appsToggle = drawer.getByRole('button', { name: 'Apps sections' });
   await expect(appsToggle).toHaveAttribute('aria-expanded', 'false');
   expect(await heightOf(group('apps').locator('.drawer-sub'))).toBe(0);
@@ -306,7 +302,7 @@ test('the Apps, Play, Diary, and Info tabs unfold their sections on hover and ke
     await expect(panel.locator('a').filter({ hasText: /^Top$/ })).toHaveCount(0);
     await expect(panel.locator('a').first()).toBeVisible();
     if (key === 'apps') {
-      // 15 apps, a five-row window: the panel scrolls instead of running down
+      // 11 apps, a five-row window: the panel scrolls instead of running down
       // the page, and the pointer can still travel from the tab into it.
       const box = await panel.evaluate(node => ({ client: node.clientHeight, scroll: node.scrollHeight }));
       expect(box.client).toBeLessThanOrEqual(230);
