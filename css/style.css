@@ -141,3 +141,30 @@ html[data-theme="dark"] .theme-toggle .theme-toggle-ic[data-icon="sun"] { displa
 .visit-badge .visit-num{font-weight:700;color:var(--ink,#1D192B)}
 .visit-badge .visit-sep{opacity:.5}
 @media(max-width:760px){.site-footer{flex-wrap:wrap;row-gap:14px}}
+
+/* ── Navigation: a long section list scrolls in place ─────────────────────
+   Apps holds 15 apps now, so a dropdown panel or a drawer section shows a
+   five-row window (5 × ~40px plus gaps ≈ 224px) and scrolls inside it instead
+   of pushing Play / Tech / Diary / Info / About off the screen. The panel is a
+   scroll container from here on, which clips its own ::before hover bridge, so
+   the bridge lives on .nav-dropdown instead. */
+.nav-dropdown::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: 14px;
+}
+.nav-dropdown-panel { max-height: 224px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent;
+    scrollbar-color: color-mix(in srgb, var(--accent) 32%, var(--line-strong)) transparent; }
+.nav-dropdown-panel::before { content: none; }
+.nav-dropdown-panel::-webkit-scrollbar { width: 6px; }
+.nav-dropdown-panel::-webkit-scrollbar-track { background: transparent; }
+.nav-dropdown-panel::-webkit-scrollbar-thumb { border-radius: 999px; background: var(--line-strong); background: color-mix(in srgb, var(--accent) 32%, var(--line-strong)); }
+
+.drawer-group.is-open .drawer-sub { max-height: 224px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent;
+    scrollbar-color: color-mix(in srgb, var(--accent) 32%, var(--line-strong)) transparent; }
+.drawer-sub::-webkit-scrollbar { width: 6px; }
+.drawer-sub::-webkit-scrollbar-track { background: transparent; }
+.drawer-sub::-webkit-scrollbar-thumb { border-radius: 999px; background: var(--line-strong); background: color-mix(in srgb, var(--accent) 32%, var(--line-strong)); }
