@@ -110,11 +110,11 @@ const APPS_MENU = [
   ['DOS Player', 'https://hyangdan2.github.io/PKPilot0006/'],
   ['HD2Markdown Viewer', 'https://hyangdan2.github.io/PKPilot0008/'],
   ['Machine Learning Lab', 'https://hyangdan2.github.io/EDPilot0001/'],
-  ['Nordlys', 'https://hyangdan2.github.io/PKPilot0011/'],
-  ['Vektra Vár', 'https://hyangdan2.github.io/PKPilot0012/'],
-  ['Vísna Sól', 'https://hyangdan2.github.io/PKPilot0013/'],
-  ['Sága Glitra', 'https://hyangdan2.github.io/PKPilot0014/'],
-  ['Mynda Ljósa', 'https://hyangdan2.github.io/PKPilot0015/'],
+  ['CinePlate', 'https://hyangdan2.github.io/PKPilot0011/'],
+  ['ObjectLens', 'https://hyangdan2.github.io/PKPilot0012/'],
+  ['CodePlayground', 'https://hyangdan2.github.io/PKPilot0013/'],
+  ['SlideDeck', 'https://hyangdan2.github.io/PKPilot0014/'],
+  ['FrameBuilder', 'https://hyangdan2.github.io/PKPilot0015/'],
 ];
 const PUBLIC_GAMES = catalog.games.filter(game => game.status !== 'draft');
 const PLAY_MENU = PUBLIC_GAMES.map(game => [game.title, game.playUrl]);
