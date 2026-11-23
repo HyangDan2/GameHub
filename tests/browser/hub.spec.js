@@ -265,7 +265,10 @@ test('the mobile ≡ unfolds the right drawer as a one-line list whose Apps, Pla
   await expect.poll(() => heightOf(group('diary').locator('.drawer-sub'))).toBe(0);
   await expect.poll(() => heightOf(group('info').locator('.drawer-sub'))).toBe(0);
 
-  await expect.poll(() => page.locator('#theme-toggle').evaluate(node => getComputedStyle(node).opacity)).toBe('0');
+  // The theme toggle now lives in the header, so it stays put while the drawer
+  // is open; the drawer backdrop is what covers it.
+  expect(await page.locator('#theme-toggle').evaluate(node => getComputedStyle(node).opacity)).toBe('1');
+  expect(await page.locator('#theme-toggle').evaluate(node => !!node.closest('.site-header'))).toBe(true);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.keyboard.press('Escape');
   await expect(drawer).not.toHaveClass(/is-open/);
