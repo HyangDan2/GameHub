@@ -108,6 +108,7 @@ const APPS_MENU = [
   ['Film Studio', 'https://hyangdan2.github.io/AGPilot0007/'],
   ['Shutterplate', 'https://hyangdan2.github.io/PKPilot0003/'],
   ['DOS Player', 'https://hyangdan2.github.io/PKPilot0006/'],
+  ['Statelia', 'https://hyangdan2.github.io/PKPilot0018/'],
   ['HD2Markdown Viewer', 'https://hyangdan2.github.io/PKPilot0008/'],
   ['Machine Learning Lab', 'https://hyangdan2.github.io/EDPilot0001/'],
   ['CinePlate', 'https://hyangdan2.github.io/PKPilot0011/'],
@@ -180,7 +181,7 @@ test('the mobile ≡ unfolds the right drawer as a one-line list whose Apps, Pla
   expect(await heightOf(group('play').locator('.drawer-sub'))).toBeGreaterThan(PLAY_MENU.length * 38);
 
   // Apps starts closed; unfolding it folds Play, so the drawer never grows past
-  // one section. Its 11 apps live in a five-row window that scrolls.
+  // one section. Its 12 apps live in a five-row window that scrolls.
   const appsToggle = drawer.getByRole('button', { name: 'Apps sections' });
   await expect(appsToggle).toHaveAttribute('aria-expanded', 'false');
   expect(await heightOf(group('apps').locator('.drawer-sub'))).toBe(0);
@@ -305,7 +306,7 @@ test('the Apps, Play, Diary, and Info tabs unfold their sections on hover and ke
     await expect(panel.locator('a').filter({ hasText: /^Top$/ })).toHaveCount(0);
     await expect(panel.locator('a').first()).toBeVisible();
     if (key === 'apps') {
-      // 11 apps, a five-row window: the panel scrolls instead of running down
+      // 12 apps, a five-row window: the panel scrolls instead of running down
       // the page, and the pointer can still travel from the tab into it.
       const box = await panel.evaluate(node => ({ client: node.clientHeight, scroll: node.scrollHeight }));
       expect(box.client).toBeLessThanOrEqual(230);
